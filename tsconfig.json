@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "declaration": true,
+        "allowSyntheticDefaultImports": true,
+        "target": "es2021",
+        "sourceMap": true,
+        "outDir": "./lib",
+        "rootDir": "./src",
+        "strict": true,
+        "incremental": true,
+        "skipLibCheck": true,
+        "noImplicitAny": false,
+        "strictBindCallApply": false,
+        "forceConsistentCasingInFileNames": false,
+        "noFallthroughCasesInSwitch": false,
+        "esModuleInterop": true,
+        "noUncheckedIndexedAccess": true,
+    },
+    "include": ["./src"],
+}
