@@ -1,46 +1,49 @@
+import { KIND, Kind, Map, MaybePromise } from './common';
+
 export class UnwrapError<E> extends Error {
     constructor(public readonly data: E) {
         super('Operation has resulted in an error.');
     }
 }
 
-export class ResultOk<T> {
-    constructor(public readonly data: T) {}
+export interface ResultOk<T> extends Kind<'result_ok'> {
+    readonly data: T;
 }
 
-export class ResultErr<E> {
-    constructor(public readonly data: E) {}
+export interface ResultErr<T> extends Kind<'result_err'> {
+    readonly data: T;
 }
-
-type MaybePromise<T> = T | Promise<T>;
-type Map<A, B> = (data: A) => B;
 
 export type Result<T, E> = ResultOk<T> | ResultErr<E>;
 export type ResultPromise<T, E> = Promise<Result<T, E>>;
 
 class ResultFunctions {
     public static ok<T, E = never>(data: T): Result<T, E> {
-        return new ResultOk(data);
+        return { data, [KIND]: 'result_ok' };
     }
 
     public static void<E = never>(): Result<void, E> {
-        return new ResultOk(undefined);
+        return { data: undefined, [KIND]: 'result_ok' };
     }
 
     public static err<E, T = never>(data: E): Result<T, E> {
-        return new ResultErr(data);
+        return { data, [KIND]: 'result_err' };
+    }
+
+    public static isResult<T, E>(value: unknown): value is Result<T, E> {
+        return typeof value === 'object' && !!value && (value[KIND] === 'result_ok' || value[KIND] === 'result_err');
     }
 
     public static isOk<T, E>(result: Result<T, E>): result is ResultOk<T> {
-        return result instanceof ResultOk;
+        return result[KIND] === 'result_ok';
     }
 
     public static isErr<T, E>(result: Result<T, E>): result is ResultErr<E> {
-        return result instanceof ResultErr;
+        return result[KIND] === 'result_err';
     }
 
     public static wrapOk<T, E>(data: T | Result<T, E>): Result<T, E> {
-        if (data instanceof ResultOk || data instanceof ResultErr) {
+        if (ResultFunctions.isResult(data)) {
             return data;
         }
 
@@ -48,7 +51,7 @@ class ResultFunctions {
     }
 
     public static wrapErr<T, E>(data: E | Result<T, E>): Result<T, E> {
-        if (data instanceof ResultOk || data instanceof ResultErr) {
+        if (ResultFunctions.isResult(data)) {
             return data;
         }
 

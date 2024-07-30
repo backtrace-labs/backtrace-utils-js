@@ -1,5 +1,6 @@
+import { KIND } from '../src/common';
 import { pipe } from '../src/pipe';
-import { Result } from '../src/result';
+import { Result, ResultErr, ResultOk } from '../src/result';
 
 describe('result', () => {
     describe('isOk', () => {
@@ -12,6 +13,24 @@ describe('result', () => {
             const result = Result.err(123);
             expect(Result.isOk(result)).toEqual(false);
         });
+
+        it('should return true for ok result-like', () => {
+            const result: ResultOk<number> = {
+                data: 123,
+                [KIND]: 'result_ok',
+            };
+
+            expect(Result.isOk(result)).toEqual(true);
+        });
+
+        it('should return false for err result-like', () => {
+            const result: ResultErr<number> = {
+                data: 123,
+                [KIND]: 'result_err',
+            };
+
+            expect(Result.isOk(result)).toEqual(false);
+        });
     });
 
     describe('isErr', () => {
@@ -22,6 +41,24 @@ describe('result', () => {
 
         it('should return false for ok results', () => {
             const result = Result.ok(123);
+            expect(Result.isErr(result)).toEqual(false);
+        });
+
+        it('should return true for err result-like', () => {
+            const result: ResultErr<number> = {
+                data: 123,
+                [KIND]: 'result_err',
+            };
+
+            expect(Result.isErr(result)).toEqual(true);
+        });
+
+        it('should return false for ok result-like', () => {
+            const result: ResultOk<number> = {
+                data: 123,
+                [KIND]: 'result_ok',
+            };
+
             expect(Result.isErr(result)).toEqual(false);
         });
     });
