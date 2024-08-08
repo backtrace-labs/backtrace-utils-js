@@ -364,4 +364,92 @@ describe('result', () => {
             expect(actual).toEqual(expected);
         });
     });
+
+    describe('tryCatch', () => {
+        it('should return ok result if function does not throw', () => {
+            const fn = () => 'abc';
+
+            const result = Result.tryCatch(fn);
+            expect(Result.isOk(result)).toEqual(true);
+        });
+
+        it('should return ok result if async function does not throw', async () => {
+            const fn = async () => 'abc';
+
+            const result = await Result.tryCatch(fn);
+            expect(Result.isOk(result)).toEqual(true);
+        });
+
+        it('should return value if function does not throw', () => {
+            const expected = 'abc';
+            const fn = () => expected;
+
+            const result = Result.tryCatch(fn);
+            expect(result.data).toBe(expected);
+        });
+
+        it('should return value if async function does not throw', async () => {
+            const expected = 'abc';
+            const fn = async () => expected;
+
+            const result = await Result.tryCatch(fn);
+            expect(result.data).toBe(expected);
+        });
+
+        it('should return err result if function throws', () => {
+            const fn = (): number => {
+                throw new Error('abc');
+            };
+
+            const result = Result.tryCatch(fn);
+            expect(Result.isErr(result)).toEqual(true);
+        });
+
+        it('should return err result if async function throws', async () => {
+            const fn = async (): Promise<number> => {
+                throw new Error('abc');
+            };
+
+            const result = await Result.tryCatch(fn);
+            expect(Result.isErr(result)).toEqual(true);
+        });
+
+        it('should return thrown error if function throws', () => {
+            const expected = new Error('abc');
+            const fn = (): number => {
+                throw expected;
+            };
+
+            const result = Result.tryCatch(fn);
+            expect(result.data).toBe(expected);
+        });
+
+        it('should return thrown error if async function throws', async () => {
+            const expected = new Error('abc');
+            const fn = async (): Promise<number> => {
+                throw expected;
+            };
+
+            const result = await Result.tryCatch(fn);
+            expect(result.data).toBe(expected);
+        });
+
+        it('should return error if function throws non-error', () => {
+            const fn = (): number => {
+                throw 'abc';
+            };
+
+            const result = Result.tryCatch(fn);
+            expect(result.data).toBeInstanceOf(Error);
+        });
+
+        it('should return error if async function throws non-error', async () => {
+            const fn = async (): Promise<number> => {
+                throw 'abc';
+            };
+
+            const result = await Result.tryCatch(fn);
+            expect(result.data).toBeInstanceOf(Error);
+        });
+    });
 });

@@ -1,4 +1,5 @@
 import { KIND, Kind, Map, MaybePromise } from './common';
+import { ensureError } from './error';
 
 export class UnwrapError<E> extends Error {
     constructor(public readonly data: E) {
@@ -176,6 +177,34 @@ class ResultFunctions {
         }
 
         return ResultFunctions.ok(data);
+    }
+
+    public static tryCatch<T>(fn: () => Promise<T>): Promise<Result<T, Error>>;
+    public static tryCatch<T>(fn: () => T): Result<T, Error>;
+    public static tryCatch<T>(fn: () => MaybePromise<T>): MaybePromise<Result<T, Error>> {
+        try {
+            const result = fn();
+            if (result instanceof Promise) {
+                return result.then(Result.ok).catch((reason) => Result.err(ensureError(reason)));
+            }
+            return Result.ok(result);
+        } catch (err) {
+            return Result.err(ensureError(err));
+        }
+    }
+
+    public static tryCatchUnknown<T>(fn: () => Promise<T>): Promise<Result<T, unknown>>;
+    public static tryCatchUnknown<T>(fn: () => T): Result<T, unknown>;
+    public static tryCatchUnknown<T>(fn: () => MaybePromise<T>): MaybePromise<Result<T, unknown>> {
+        try {
+            const result = fn();
+            if (result instanceof Promise) {
+                return result.then(Result.ok).catch(Result.err);
+            }
+            return Result.ok(result);
+        } catch (err) {
+            return Result.err(err);
+        }
     }
 }
 
