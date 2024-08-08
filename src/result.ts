@@ -35,11 +35,11 @@ class ResultFunctions {
         return typeof value === 'object' && !!value && (value[KIND] === 'result_ok' || value[KIND] === 'result_err');
     }
 
-    public static isOk<T, E>(result: Result<T, E>): result is ResultOk<T> {
+    public static isOk<T>(result: Result<T, unknown>): result is ResultOk<T> {
         return result[KIND] === 'result_ok';
     }
 
-    public static isErr<T, E>(result: Result<T, E>): result is ResultErr<E> {
+    public static isErr<E>(result: Result<unknown, E>): result is ResultErr<E> {
         return result[KIND] === 'result_err';
     }
 
@@ -59,7 +59,7 @@ class ResultFunctions {
         return ResultFunctions.err(data);
     }
 
-    public static unwrap<T, E>(result: Result<T, E>): T {
+    public static unwrap<T>(result: Result<T, unknown>): T {
         if (ResultFunctions.isErr(result)) {
             if (result.data instanceof Error) {
                 throw result.data;
