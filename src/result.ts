@@ -206,6 +206,14 @@ class ResultFunctions {
             return Result.err(err);
         }
     }
+
+    public static optional<T, E = never>(result: Result<T, E>): T | undefined {
+        return Result.mapErr(result, () => undefined).data;
+    }
+
+    public static optionalErr<E, T = never>(result: Result<T, E>): E | undefined {
+        return Result.map(result, () => undefined).data;
+    }
 }
 
 export const Result = ResultFunctions;

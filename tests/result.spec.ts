@@ -452,4 +452,38 @@ describe('result', () => {
             expect(result.data).toBeInstanceOf(Error);
         });
     });
+
+    describe('optional', () => {
+        it('should return value when is ok', () => {
+            const value = 123;
+            const result = Result.ok(value);
+
+            const actual = Result.optional(result);
+            expect(actual).toEqual(value);
+        });
+
+        it('should return undefined when is error', () => {
+            const result = Result.err(123);
+
+            const actual = Result.optional(result);
+            expect(actual).toEqual(undefined);
+        });
+    });
+
+    describe('optionalErr', () => {
+        it('should return undefined when is ok', () => {
+            const result = Result.ok(123);
+
+            const actual = Result.optionalErr(result);
+            expect(actual).toEqual(undefined);
+        });
+
+        it('should return undefined when is error', () => {
+            const value = 123;
+            const result = Result.err(value);
+
+            const actual = Result.optionalErr(result);
+            expect(actual).toEqual(value);
+        });
+    });
 });
